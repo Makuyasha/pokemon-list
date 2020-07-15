@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pokemonlist.network.PokemonApi
+import com.example.pokemonlist.network.PokemonProperty
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Callback
@@ -25,13 +26,15 @@ class OverviewViewModel : ViewModel() {
     }
 
     private fun getPokemonList() {
-        PokemonApi.retrofitService.getPokemonList().enqueue( object : Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
+        PokemonApi.retrofitService.getPokemonList().enqueue( object : Callback<PokemonProperty> {
+
+            override fun onFailure(call: Call<PokemonProperty>, t: Throwable) {
                 _response.value = "Failure: " + t.message
             }
 
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                _response.value = response.body()
+            override fun onResponse(call: Call<PokemonProperty>, response: Response<PokemonProperty>
+            ) {
+                _response.value = "Success: ${response.body()?.count} Pokemon properties retrieved"
             }
         })
     }
