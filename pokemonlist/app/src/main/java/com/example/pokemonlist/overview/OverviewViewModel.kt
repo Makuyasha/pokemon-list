@@ -5,6 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pokemonlist.network.PokemonApi
 import com.example.pokemonlist.network.PokemonProperty
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Callback
@@ -21,21 +25,28 @@ class OverviewViewModel : ViewModel() {
     val response: LiveData<String>
         get() = _response
 
+    private var viewModelJob = Job()
+
+    private var coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
     init {
         getPokemonList()
     }
 
     private fun getPokemonList() {
-        PokemonApi.retrofitService.getPokemonList().enqueue( object : Callback<PokemonProperty> {
-
-            override fun onFailure(call: Call<PokemonProperty>, t: Throwable) {
-                _response.value = "Failure: " + t.message
+        coroutineScope.launch {
+            var getPropertiesDeferred = PokemonApi.retrofitService.getPokemonList()
+            var listResult = getPropertiesDeferred.await()
+            try {
+                _response.value = "Success: ${listResult.count} Mars properties retrieved"
+            } catch (e: Exception) {
+                _response.value = "Failure: ${e.message}"
             }
+        }
+    }
 
-            override fun onResponse(call: Call<PokemonProperty>, response: Response<PokemonProperty>
-            ) {
-                _response.value = "Success: ${response.body()?.count} Pokemon properties retrieved"
-            }
-        })
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 }
