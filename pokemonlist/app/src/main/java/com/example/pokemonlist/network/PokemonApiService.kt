@@ -1,5 +1,6 @@
 package com.example.pokemonlist.network
 
+import com.example.pokemonlist.model.Pokemon
 import com.example.pokemonlist.util.ConfigurationUtils.BASE_URL
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi

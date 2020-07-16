@@ -3,26 +3,20 @@ package com.example.pokemonlist.overview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.pokemonlist.model.Pokemon
 import com.example.pokemonlist.network.PokemonApi
-import com.example.pokemonlist.network.PokemonProperty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Callback
 
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
 class OverviewViewModel : ViewModel() {
 
-    // The internal MutableLiveData String that stores the most recent response
-    private val _response = MutableLiveData<String>()
-
-    // The external immutable LiveData for the response String
-    val response: LiveData<String>
+    private val _response = MutableLiveData<List<Pokemon>>()
+    val response: LiveData<List<Pokemon>>
         get() = _response
 
     private var viewModelJob = Job()
@@ -36,11 +30,11 @@ class OverviewViewModel : ViewModel() {
     private fun getPokemonList() {
         coroutineScope.launch {
             var getPropertiesDeferred = PokemonApi.retrofitService.getPokemonList()
-            var listResult = getPropertiesDeferred.await()
             try {
-                _response.value = "Success: ${listResult.count} Mars properties retrieved"
+                val listResult = getPropertiesDeferred.await()
+                _response.value = listResult.results
             } catch (e: Exception) {
-                _response.value = "Failure: ${e.message}"
+
             }
         }
     }

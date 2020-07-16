@@ -17,12 +17,16 @@
 
 package com.example.pokemonlist.overview
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.pokemonlist.R
+import com.example.pokemonlist.adapter.PokemonListAdapter
 import com.example.pokemonlist.databinding.FragmentOverviewBinding
+import com.example.pokemonlist.model.Pokemon
 
 /**
  * This fragment shows the the status of the Mars real-estate web services transaction.
@@ -49,6 +53,8 @@ class OverviewFragment : Fragment() {
 
         // Giving the binding access to the OverviewViewModel
         binding.viewModel = viewModel
+
+        binding.rvPokemonList.adapter = PokemonListAdapter()
 
         return binding.root
     }
